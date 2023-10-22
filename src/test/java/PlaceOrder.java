@@ -6,18 +6,22 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.io.FileHandler;
 import org.openqa.selenium.support.ui.Select;
 
+import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 
 public class PlaceOrder {
+
     WebDriver driver;
+
     HeaderPage headerPage;
     ProductPage productPage;
     CheckoutPage checkoutPage;
@@ -111,10 +115,11 @@ public class PlaceOrder {
         checkoutPage.pickPaymentOption();
         Assert.assertTrue(checkoutPage.getPaymentRadio().isSelected());
     }
+
 //    @And("chooses payment method <payment>")
 //    public void choosesPaymentMethodPayment() {
 //    }
-//
+
     @And("accepts terms of service")
     public void acceptsTermsOfService() {
         checkoutPage.checkTermsAndConditionsCheckbox();
@@ -130,10 +135,25 @@ public class PlaceOrder {
         orderConfirmationPage = new OrderConfirmationPage(driver);
         orderConfirmationPage.getConfirmationAlert();
     }
+
     @And("screenshot is taken")
     public void screenshotIsTaken() throws IOException {
+
+/*
+--- Alternative screenshot ---
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("document.body.style.zoom = '0.7'");
+        WebElement element = orderConfirmationPage.getConfirmationCard();
+        js.executeScript("arguments[0].scrollIntoView();", element);
         File orderInfoScreenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+*/
+        File orderInfoScreenshot = orderConfirmationPage.getConfirmationCard().getScreenshotAs(OutputType.FILE);
         FileUtils.copyFile(orderInfoScreenshot, new File("C:\\CodersLab\\Zaliczenie\\mystore-testlab_task2\\screenshots\\orderInfo.png"));
     }
 
+    @After
+    public void after() {
+        driver.close();
+        driver.quit();
+    }
 }

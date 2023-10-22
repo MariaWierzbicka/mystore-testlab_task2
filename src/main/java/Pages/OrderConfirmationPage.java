@@ -10,8 +10,13 @@ public class OrderConfirmationPage extends BasePage{
     }
     @FindBy(xpath = "//*[text()[contains(.,\"Your order is confirmed\")]]")
     private WebElement confirmationAlert;
+    @FindBy(className = "definition-list")
+    private WebElement confirmationCard;
     public WebElement getConfirmationAlert() {
         return getVisibleElement(confirmationAlert);
+    }
+    public WebElement getConfirmationCard() {
+        return getVisibleElement(confirmationCard);
     }
 
 }
