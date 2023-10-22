@@ -17,10 +17,10 @@ Feature: Log in and place an order
 #    And user chooses shipping option <shipping> and clicks continue
     And chooses payment method pay-by-check
 #    And chooses payment method <payment>
-#    And accepts terms of service
-#    And confirms by clicking place order
-#    Then order confirmation is displayed
-#    And screenshot is taken
+    And accepts terms of service
+    And confirms by clicking place order
+    Then order confirmation is displayed
+    And screenshot is taken
 
     Examples:
       | email                        | password  | product                     | size | quantity | shipping    | payment      |

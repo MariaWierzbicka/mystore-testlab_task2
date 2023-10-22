@@ -1,5 +1,6 @@
 package Pages;
 
+import dev.failsafe.internal.util.Assert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -16,6 +17,16 @@ public class CheckoutPage extends BasePage{
     private WebElement deliveryOptionRadio;
     @FindBy(name="confirmDeliveryOption")
     private WebElement confirmDeliveryButton;
+
+    @FindBy(xpath = "(//*[contains(text(), \"Pay by Check\")])/../preceding-sibling::span/input")
+    private WebElement paymentRadio;
+    @FindBy(xpath = "//*[contains(text(), \"Pay by Check\")]")
+    private WebElement paymentOption;
+    @FindBy(id="conditions_to_approve[terms-and-conditions]")
+    private WebElement termsAndConditionsCheckbox;
+    @FindBy(xpath = "//*[@id=\"payment-confirmation\"]//button")
+    private WebElement placeOrderButton;
+
     public WebElement getConfirmAddressButton(){
         return getVisibleElement(confirmAddressButton);
     }
@@ -40,5 +51,29 @@ public class CheckoutPage extends BasePage{
     public void clickConfirmDeliveryButton(){
         getConfirmDeliveryButton().click();
     }
-
+    public WebElement getPaymentOption(){
+        return getVisibleElement(paymentOption);
+    }
+    public WebElement getPaymentRadio() {
+        return paymentRadio;
+    }
+    public void pickPaymentOption() {
+        getPaymentOption().click();
+    }
+    public WebElement getTermsAndConditionsCheckbox() {
+        return getVisibleElement(termsAndConditionsCheckbox);
+    }
+    public void checkTermsAndConditionsCheckbox() {
+        if(!termsAndConditionsCheckbox.isSelected()){
+            termsAndConditionsCheckbox.click();
+        }
+    }
+    public WebElement getPlaceOrderButton() {
+        boolean activePlaceOrderButton = placeOrderButton.isEnabled();
+        Assert.isTrue(activePlaceOrderButton, "Terms not accepted");
+        return getVisibleElement(placeOrderButton);
+    }
+    public void clickPlaceOrderButton() {
+        getPlaceOrderButton().click();
+    }
 }

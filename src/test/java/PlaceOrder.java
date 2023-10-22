@@ -1,16 +1,19 @@
 import Pages.*;
 import io.cucumber.java.Before;
+import io.cucumber.java.bs.A;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.io.FileHandler;
 import org.openqa.selenium.support.ui.Select;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
 
 public class PlaceOrder {
@@ -18,6 +21,7 @@ public class PlaceOrder {
     HeaderPage headerPage;
     ProductPage productPage;
     CheckoutPage checkoutPage;
+    OrderConfirmationPage orderConfirmationPage;
 
     @Before
     public void before() {
@@ -104,25 +108,32 @@ public class PlaceOrder {
 
     @And("chooses payment method pay-by-check")
     public void choosesPaymentMethodPayByCheck() {
+        checkoutPage.pickPaymentOption();
+        Assert.assertTrue(checkoutPage.getPaymentRadio().isSelected());
     }
 //    @And("chooses payment method <payment>")
 //    public void choosesPaymentMethodPayment() {
 //    }
 //
-//    @And("accepts terms of service")
-//    public void acceptsTermsOfService() {
-//    }
-//
-//    @And("confirms by clicking place order")
-//    public void confirmsByClickingPlaceOrder() {
-//    }
-//
-//    @Then("order confirmation is displayed")
-//    public void orderConfirmationIsDisplayed() {
-//    }
-//
-//    @And("screenshot is taken")
-//    public void screenshotIsTaken() {
-//    }
+    @And("accepts terms of service")
+    public void acceptsTermsOfService() {
+        checkoutPage.checkTermsAndConditionsCheckbox();
+    }
+
+    @And("confirms by clicking place order")
+    public void confirmsByClickingPlaceOrder() {
+        checkoutPage.clickPlaceOrderButton();
+    }
+
+    @Then("order confirmation is displayed")
+    public void orderConfirmationIsDisplayed() {
+        orderConfirmationPage = new OrderConfirmationPage(driver);
+        orderConfirmationPage.getConfirmationAlert();
+    }
+    @And("screenshot is taken")
+    public void screenshotIsTaken() throws IOException {
+        File orderInfoScreenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+        FileUtils.copyFile(orderInfoScreenshot, new File("C:\\CodersLab\\Zaliczenie\\mystore-testlab_task2\\screenshots\\orderInfo.png"));
+    }
 
 }
