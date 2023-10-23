@@ -6,6 +6,7 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.apache.commons.io.FileUtils;
+import org.checkerframework.checker.regex.qual.Regex;
 import org.junit.After;
 import org.junit.Assert;
 import org.openqa.selenium.*;
@@ -13,6 +14,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.io.FileHandler;
 import org.openqa.selenium.support.ui.Select;
 
+import javax.annotation.RegEx;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +23,6 @@ import java.time.Duration;
 public class PlaceOrder {
 
     WebDriver driver;
-
     HeaderPage headerPage;
     ProductPage productPage;
     CheckoutPage checkoutPage;
@@ -55,22 +56,26 @@ public class PlaceOrder {
         headerPage.clickClothesCategoryButton();
     }
 
+    @And("user navigates to {} page by clicking on its name")
+    public void userNavigatesToPageByClickingOnItsName(String name) {
+        ProductsListPage productsListPage = new ProductsListPage(driver);
+        productsListPage.getProductElement(name).click();
+    }
+/*
+    --- Alternative way: fixed product ---
     @And("user navigates to product page by clicking on its name")
     public void userNavigatesToProductPageByClickingOnItsName() {
         ProductsListPage productsListPage = new ProductsListPage(driver);
         productsListPage.getProductElement().click();
     }
-
-    @And("chooses size {}")
-    public void choosesSizeSize(String size) {
+*/
+    @And("chooses size {} and quantity {}")
+    public void choosesSizeSizeAndQuantityQuantity(String size, int quantity) throws InterruptedException  {
         productPage = new ProductPage(driver);
         WebElement sizeElement = productPage.getSizeElement();
         Select select = new Select(sizeElement);
         select.selectByVisibleText(size);
-    }
 
-    @And("chooses quantity {}")
-    public void choosesQuantityQuantity(int quantity) throws InterruptedException {
         String strQuantity = String.valueOf(quantity);
         productPage.getQuantityInputElement().sendKeys(Keys.chord(Keys.CONTROL, "a"));
         Thread.sleep(Duration.ofMillis(100)); //Wait for ctrl+a to take effect
@@ -79,6 +84,7 @@ public class PlaceOrder {
 
     @And("adds product to cart")
     public void addsProductToCart() {
+        Assert.assertTrue(productPage.checkDiscount().matches("(.*)20%(.*)")); // Check if discount is 20%
         productPage.clickAddToCartButton();
     }
 
@@ -106,19 +112,11 @@ public class PlaceOrder {
         checkoutPage.clickConfirmDeliveryButton();
     }
 
-//    @And("user chooses shipping option <shipping> and clicks continue")
-//    public void userChoosesShippingOptionShippingAndClicksContinue() {
-//    }
-
     @And("chooses payment method pay-by-check")
     public void choosesPaymentMethodPayByCheck() {
         checkoutPage.pickPaymentOption();
         Assert.assertTrue(checkoutPage.getPaymentRadio().isSelected());
     }
-
-//    @And("chooses payment method <payment>")
-//    public void choosesPaymentMethodPayment() {
-//    }
 
     @And("accepts terms of service")
     public void acceptsTermsOfService() {
@@ -156,4 +154,5 @@ public class PlaceOrder {
         driver.close();
         driver.quit();
     }
+
 }
